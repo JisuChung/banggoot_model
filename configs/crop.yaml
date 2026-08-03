@@ -1,0 +1,115 @@
+# crop geometry (D-15) — D-01 의 "bbox 10~15% 확장"을 대체한다.
+#
+# 이 값들은 기존 저장소의 `crop-context-2.0` 조합이며 QC 100장에서 8건 실패로 통과했다.
+# 임의로 바꾸면 그 QC 근거가 사라진다.
+
+rule_version: crop-context-2.0
+
+geometry:
+  # side = max(box_w, box_h) * (1 + 2 * context_ratio)
+  context_ratio: 0.35
+
+  min_crop_px: 128
+
+  # ★ 0.55 이다. 이 값은 legacy 산출물을 100% 재현하는 것으로 실측 확인됐다.
+  #   재현 시뮬레이션 (2,783건, ±1px 허용):
+  #     max_crop_fraction=0.55 -> 2,783/2,783 (100.00%)
+  #     max_crop_fraction=1.00 ->   2,097/2,783 ( 75.35%)
+  #
+  #   주의: cap 단독으로는 재현되지 않는다. 아래 floor 규칙이 함께 있어야 한다.
+  #     side = min(side, short * max_crop_fraction)
+  #     side = max(side, min(max(bw, bh), short))   # seed box 보다 작아지지 않는다
+  #   이 floor 때문에 0.55*1080=594 를 초과하는 crop 이 411건 존재하며,
+  #   그중 359건은 crop_width == box_long_edge (±1px) 이다.
+  #   `_AIHUB_CROPS_OK.json` 의 parameters 블록에 이 키가 없는 것은
+  #   marker 기록 누락이지 미적용 근거가 아니다.
+  max_crop_fraction: 0.55
+
+  # 이웃 box 가 crop 후 이만큼 남지 않으면 라벨에서 제외
+  min_retained_area: 0.50
+
+  # ★ 같은 L1 끼리만 적용한다. 다른 L1 이 겹치면 D-09 에 따라 review
+  dedupe_iou: 0.70
+
+  # 정수 side 를 먼저 확정하고 x1 = x0 + side, y1 = y0 + side 로 계산해
+  # 완전한 정사각을 보장한다.
+  square_target: true
+
+  # 기존 2,783 crop 중 685장이 비정사각인데 전부 1px 차이이고,
+  # 그중 471장(69%)은 이미지 내부다. 경계 clipping 이 아니라
+  # left/top/left+side/top+side 를 각각 반올림해서 생긴 오차다.
+  # 회귀검증 시 좌표 ±1px 를 허용한다.
+  legacy_rounding_tolerance_px: 1
+
+# D-15 필수 규칙
+policy:
+  # 폐기 대상인 기존 80/10/10 배정을 참조하지 않는다. 공식 AIHub 전량을 변환한다.
+  use_legacy_split: false
+
+  # good / normal / poor 전부 포함한다.
+  # severity=good 은 "결함 없음"이 아니라 주석된 결함의 심각도 등급이다.
+  severity_filter: null
+  keep_severity_as_metadata: true
+
+  # 학습·평가 차단 (metadata.csv 에서 이미 excluded 처리됨)
+  block_legacy_annotation_error: true
+  annotation_error_review_crops_only: true
+
+  # 봉인분은 이미지 I/O 자체를 금지한다 (D-14)
+  skip_sealed_future_eval: true
+
+  # crop 이 상속해야 하는 parent 식별자
+  inherit_from_parent:
+    - record_id
+    - duplicate_group_id
+    - split_component_id
+    - source_root_id
+
+# crop 생성 대상 (D-15)
+#
+#   selector = head_a6_eligible | head_a6_aux_pool | head_a7_aux_train
+#   + annotation_error 15건은 별도 review-only 경로
+#   - sealed_future_eval 45건은 이미지 I/O 자체 금지
+#
+# 아래 수치는 parent record 수이며 최종 crop 수와 다르다
+# (AIHub 1,546 parent 에 polygon 3,724개).
+targets:
+  baseline:                       # head_a6_eligible — 공식 학습
+    aihub_567:             {mode: polygon_crop, parents: 1546}
+    dacon_wallpaper:       {mode: identity,     parents: 3448}   # 3,352 아님
+    kaggle_cracks:         {mode: identity,     parents: 1500}
+  ablation:                       # head_a6_aux_pool — A9 arm
+    roboflow_house_defect: {mode: bbox_crop,    parents: 2217}
+    roboflow_wallpaper_kr: {mode: bbox_crop,    parents: 741}
+    roboflow_wall_defects: {mode: bbox_crop,    parents: 211}    # non-moisture
+  lineage_a7:                     # head_a7_aux_train — 탐색 7-class
+    roboflow_wall_defects: {mode: bbox_crop,    parents: 103}    # moisture
+  review_only:                    # 학습·평가 금지
+    aihub_567:             {mode: polygon_crop, parents: 15}
+  sealed:                         # I/O 금지
+    roboflow_wall_defects: {parents: 45}
+
+# DACON 3,448 중 96장은 rare_detail_class_train_only 라 평가 후보는 아니지만
+# 학습에는 필요하다. identity sample 로 보존하지 않으면 소수 클래스가 그대로 소실된다.
+dacon_identity_expected: 3448
+
+# YOLO txt 의 class_id -> 데이터셋 class_names 인덱스.
+# data.yaml 의 names 순서가 dataset_registry.json 의 class_names 와 일치함을 확인했다.
+roboflow_class_names:
+  roboflow_house_defect: [baseboard, bottle, fungus, hole, radiator, rip, window]
+  roboflow_wall_defects: [corrosion, crack, deterioration, moisture, mold, stain]
+  roboflow_wallpaper_kr: [baseboard_repair, damage, furniture_repair, lifting, mold, rust_stain, surface_defect]
+
+# 회귀검증 — 기존 산출물은 기준으로만 쓰고 승계하지 않는다
+regression:
+  reference_manifest: "../defect_classifying_model/data/derived/v1/aihub_positive_crops/crop_manifest.csv"
+  reference_crops: 2783
+  reference_parents: 1062
+  # 기존은 legacy train + severity(normal,poor) 만 대상이므로 그 부분집합에서만 비교한다
+  compare_subset: "source_split==train and severity in [normal, poor]"
+  coord_tolerance_px: 1
+
+# ablation 후보 — baseline 에 넣지 않는다
+ablation_candidates:
+  max_crop_fraction: [1.00]     # 채택하려면 QC 100장 재실행 필요
+  context_ratio: [0.20, 0.50]

@@ -1,0 +1,54 @@
+# 학습·평가·배포 의존성
+#
+# 기준 환경 (../defect_classifying_model 에서 실측 검증):
+#   GPU     RTX 4050 Laptop 6GB (Ada, sm_89)
+#   Python  3.11.9
+#   실측    EfficientNet-B0 224px 학습 7.1분 / peak VRAM 1.43GB
+#
+# [LOCK] 표시는 ../defect_classifying_model/requirements-train.lock.txt 에서 가져온
+# 실제로 학습이 성공한 조합이다. 임의로 바꾸지 않는다.
+#
+# [NEW] 표시는 이 저장소에서 새로 추가한 것으로 아직 실측 검증되지 않았다.
+# 노트북 00 이 해석된 버전을 artifacts/experiments/env_report.json 에 기록하므로,
+# 첫 baseline 이 성공하면 그 값으로 == 고정한다.
+#
+# 설치: .venv\Scripts\pip install -r requirements-train.txt
+# 검증: notebooks/00_setup_env_check.ipynb
+
+--extra-index-url https://download.pytorch.org/whl/cu124
+
+# --- 학습 코어 [LOCK] ---------------------------------------------------------
+# CUDA 빌드를 열어 두면 재설치마다 다른 휠이 붙어 "어제는 GPU, 오늘은 CPU" 사고가 난다.
+torch==2.6.0+cu124
+torchvision==0.21.0+cu124
+timm==1.0.22
+ultralytics==8.4.112
+
+# --- 데이터 · 평가 [LOCK] -----------------------------------------------------
+numpy==2.4.6
+pandas==3.0.5
+pillow==12.3.0
+opencv-python==5.0.0.93
+scikit-learn==1.9.0
+PyYAML==6.0.3
+matplotlib==3.10.7
+
+# --- 배포 [LOCK] --------------------------------------------------------------
+onnx==1.20.0
+onnxruntime==1.24.1
+
+# --- 이 저장소에서 추가 [RESOLVED 2026-08-03] ---------------------------------
+# 2026-08-03 전용 venv 에서 설치·동작 확인 후 고정했다.
+# torch 2.6.0+cu124 CUDA 인식, albumentations Compose(HFlip+BrightnessContrast+CLAHE) 동작.
+#
+# ★ albumentations 는 1.4.21 을 요청했으나 numpy 2.4.6 / opencv 5.0.0.93 환경에서
+#   2.0.8 로 해석됐다. 1.x -> 2.x 는 API 파괴적 변경이 있다
+#   (always_apply 제거, 일부 transform 이름·인자 변경).
+#   configs/aug/*.yaml 과 transforms.py 는 **2.x API 기준**으로 작성한다.
+albumentations==2.0.8
+imagehash==4.3.2
+seaborn==0.13.2
+jinja2==3.1.6
+jupyterlab==4.6.2
+ipywidgets==8.1.8
+tqdm==4.70.0

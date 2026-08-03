@@ -1,0 +1,168 @@
+{
+  "generated_at": "2026-08-03T06:47:57.801578+00:00",
+  "legacy_root": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model",
+  "policy": "기존 저장소는 읽기 전용 증거 저장소. 중복·출처·검수 판정은 재계산하지 않는다 (D-06).",
+  "forced": false,
+  "changed_keys": [],
+  "entry_count": 17,
+  "entries": [
+    {
+      "key": "aihub_label_audit",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\review\\aihub_label_audit\\audit_manifest.csv",
+      "source_sha256": "d4b6a7f3630d6f8983ebfb6edf6cd03448956ac51d2fca5a23c5a0290fc49677",
+      "bytes": 36019,
+      "snapshot_path": "artifacts\\inherited\\aihub_label_audit.csv",
+      "snapshot_sha256": "d4b6a7f3630d6f8983ebfb6edf6cd03448956ac51d2fca5a23c5a0290fc49677"
+    },
+    {
+      "key": "aihub_label_audit_marker",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\review\\aihub_label_audit\\_AUDIT_RESULT_OK.json",
+      "source_sha256": "5bc6b98ef054b23c8210ff8206a278050d9fd7d3a0cfe7d2eaec28c7dfb1d011",
+      "bytes": 1028,
+      "snapshot_path": "artifacts\\inherited\\aihub_label_audit_marker.json",
+      "snapshot_sha256": "5bc6b98ef054b23c8210ff8206a278050d9fd7d3a0cfe7d2eaec28c7dfb1d011"
+    },
+    {
+      "key": "aihub_polygon_annotations",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\aihub_polygons\\annotations.csv",
+      "source_sha256": "b9e78123295c25c8135758c0f804ccc524051e53b836ce5f154493922452892f",
+      "bytes": 1545586,
+      "snapshot_path": "artifacts\\inherited\\aihub_polygon_annotations.csv",
+      "snapshot_sha256": "b9e78123295c25c8135758c0f804ccc524051e53b836ce5f154493922452892f"
+    },
+    {
+      "key": "aihub_polygons",
+      "kind": "dir",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\aihub_polygons",
+      "source_sha256": "658ae769cb2142bae3e5e4896de60c2fc16051ce91e0cff438f6259bed821b14",
+      "bytes": 5733406,
+      "file_count": 3125,
+      "hash_kind": "content",
+      "snapshot_path": "artifacts\\inherited\\aihub_polygons",
+      "snapshot_sha256": "658ae769cb2142bae3e5e4896de60c2fc16051ce91e0cff438f6259bed821b14"
+    },
+    {
+      "key": "artifact_decisions",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\artifacts\\artifact_decisions.csv",
+      "source_sha256": "8c96f68f3f34dd1ad8bca216bef422a72b1e4f3b9cf9bb0d1f1b3ff7c0e3c6a9",
+      "bytes": 2008051,
+      "snapshot_path": "artifacts\\inherited\\artifact_decisions.csv",
+      "snapshot_sha256": "8c96f68f3f34dd1ad8bca216bef422a72b1e4f3b9cf9bb0d1f1b3ff7c0e3c6a9"
+    },
+    {
+      "key": "dataset_inventory",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\manifests\\dataset_inventory.csv",
+      "source_sha256": "d8059cf338c3299b61cc3c4f3303c6c54a0ae916b7675b24458f685a2a8ff7a6",
+      "bytes": 18605716,
+      "note": "★ label_path 가 여기에만 있다. crop 생성의 전제.",
+      "snapshot_path": "artifacts\\inherited\\dataset_inventory.csv",
+      "snapshot_sha256": "d8059cf338c3299b61cc3c4f3303c6c54a0ae916b7675b24458f685a2a8ff7a6"
+    },
+    {
+      "key": "derivative_eval_review",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\configs\\derivative_eval_review.json",
+      "source_sha256": "d2b17e15b22a320680981bf4ef62b5e0f91d4817a74ea91f3930d378f7a3b8d1",
+      "bytes": 4251,
+      "snapshot_path": "artifacts\\inherited\\derivative_eval_review.json",
+      "snapshot_sha256": "d2b17e15b22a320680981bf4ef62b5e0f91d4817a74ea91f3930d378f7a3b8d1"
+    },
+    {
+      "key": "duplicate_groups",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\manifests\\duplicate_groups.csv",
+      "source_sha256": "22969aa3bd12b329e1f65524cf99841cbc54ec46010a1f2851f20e0c1d55cb56",
+      "bytes": 11632999,
+      "snapshot_path": "artifacts\\inherited\\duplicate_groups.csv",
+      "snapshot_sha256": "22969aa3bd12b329e1f65524cf99841cbc54ec46010a1f2851f20e0c1d55cb56"
+    },
+    {
+      "key": "eval_artifact_direct_decisions",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\artifacts\\eval_artifact_direct_decisions.csv",
+      "source_sha256": "b88d7d01fb09385fced4191209b70dd06b67701592c6f51e15ca2ea6f6750c72",
+      "bytes": 168854,
+      "snapshot_path": "artifacts\\inherited\\eval_artifact_direct_decisions.csv",
+      "snapshot_sha256": "b88d7d01fb09385fced4191209b70dd06b67701592c6f51e15ca2ea6f6750c72"
+    },
+    {
+      "key": "image_hashes",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\reports\\image_hashes.csv",
+      "source_sha256": "812e2c6f8ec2a064deea5c35731dcd73bf802934fcd56d1133a5ff0dea81515d",
+      "bytes": 19016545,
+      "snapshot_path": "artifacts\\inherited\\image_hashes.csv",
+      "snapshot_sha256": "812e2c6f8ec2a064deea5c35731dcd73bf802934fcd56d1133a5ff0dea81515d"
+    },
+    {
+      "key": "inventory_summary",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\manifests\\inventory_summary.json",
+      "source_sha256": "2b5bca0695216ff285223404fbaac725469fbc5c6830c6d31c270c612d1b7030",
+      "bytes": 2081,
+      "snapshot_path": "artifacts\\inherited\\inventory_summary.json",
+      "snapshot_sha256": "2b5bca0695216ff285223404fbaac725469fbc5c6830c6d31c270c612d1b7030"
+    },
+    {
+      "key": "manual_confirmed_artifacts",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\configs\\manual_confirmed_artifacts.json",
+      "source_sha256": "31ac60716ef666592ec19526e7d99529152f1d3dbe6c4a52d128f5c3d0fbc4ec",
+      "bytes": 1818,
+      "snapshot_path": "artifacts\\inherited\\manual_confirmed_artifacts.json",
+      "snapshot_sha256": "31ac60716ef666592ec19526e7d99529152f1d3dbe6c4a52d128f5c3d0fbc4ec"
+    },
+    {
+      "key": "origin_decisions",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\origin\\origin_decisions.csv",
+      "source_sha256": "a27bdecafceb764fba9ef86f347a3a0ef9ae1c294d83170b53f9d5a9b9721d13",
+      "bytes": 10936823,
+      "note": "★ origin 권위 소스. effective_origin / quarantined / *_effective.",
+      "snapshot_path": "artifacts\\inherited\\origin_decisions.csv",
+      "snapshot_sha256": "a27bdecafceb764fba9ef86f347a3a0ef9ae1c294d83170b53f9d5a9b9721d13"
+    },
+    {
+      "key": "origin_ok_marker",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\origin\\_ORIGIN_OK.json",
+      "source_sha256": "703c0f07f5def3370e0935b451e0e81fed3376da6104c9071ae531d417f38868",
+      "bytes": 1635,
+      "snapshot_path": "artifacts\\inherited\\origin_ok_marker.json",
+      "snapshot_sha256": "703c0f07f5def3370e0935b451e0e81fed3376da6104c9071ae531d417f38868"
+    },
+    {
+      "key": "origin_overrides",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\configs\\origin_overrides.json",
+      "source_sha256": "e31ac2ddf82b1d17460d307b7394c8e0765f68f3f210d5c9c68d9a15f0d96e62",
+      "bytes": 5315,
+      "snapshot_path": "artifacts\\inherited\\origin_overrides.json",
+      "snapshot_sha256": "e31ac2ddf82b1d17460d307b7394c8e0765f68f3f210d5c9c68d9a15f0d96e62"
+    },
+    {
+      "key": "review_manifest",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\review\\review_manifest.csv",
+      "source_sha256": "066c97880ffd2e4da6f4a74cbd96bb3876c94974b1268ca20e1870749825338f",
+      "bytes": 17598,
+      "snapshot_path": "artifacts\\inherited\\review_manifest.csv",
+      "snapshot_sha256": "066c97880ffd2e4da6f4a74cbd96bb3876c94974b1268ca20e1870749825338f"
+    },
+    {
+      "key": "split_manifest",
+      "kind": "file",
+      "source_path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\splits\\split_manifest.csv",
+      "source_sha256": "7228e62fc6f607f492ca9900214ede758abddfec560b4b3ae817a2a1e82e0a72",
+      "bytes": 17752960,
+      "note": "구조 전용 (split_component_id / duplicate_group_id / source_root_id). source_origin 은 오버라이드 미반영이므로 쓰지 않는다.",
+      "snapshot_path": "artifacts\\inherited\\split_manifest.csv",
+      "snapshot_sha256": "7228e62fc6f607f492ca9900214ede758abddfec560b4b3ae817a2a1e82e0a72"
+    }
+  ]
+}

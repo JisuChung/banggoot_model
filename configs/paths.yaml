@@ -1,0 +1,78 @@
+# 경로 설정
+#
+# 원본 데이터는 복사하지 않고 기존 저장소를 그대로 참조한다(9GB).
+# 기존 저장소는 읽기 전용 증거 저장소다. 여기서 절대 쓰지 않는다.
+
+legacy:
+  root: "../defect_classifying_model"
+  data_raw: "../defect_classifying_model/data/raw"
+  registry: "../defect_classifying_model/configs/dataset_registry.json"
+
+  # ---------------------------------------------------------------------------
+  # 승계 대상 (D-06). 노트북 01이 SHA-256과 함께 artifacts/inherited/ 로 스냅샷하고
+  # artifacts/inherited/MANIFEST.json 에 원본 경로·해시·승계 일시를 기록한다.
+  #
+  # ★ 레이어 순서가 중요하다. origin 은 2층 구조다.
+  #    split_manifest.csv 의 source_origin 은 build_global_splits.py 가
+  #    assign_origin() 으로 계산한 baseline 이고, origin_overrides.json 을 읽지 않는다.
+  #    실제 유효값은 origin_decisions.csv 의 effective_origin 과 *_effective 컬럼이다.
+  #    split_manifest 만 승계하면 roboflow_wall_defects 376장이 real_verified 로
+  #    남아 강등 이전 상태를 그대로 상속한다. (D-12)
+  # ---------------------------------------------------------------------------
+  inherit:
+    # 0층 — 원본 인벤토리 (★ label_path 가 여기에만 있다. crop 생성의 전제)
+    #        split_manifest 에 없는 컬럼: source_split, task, label_path, mask_path,
+    #        candidate_target_class, severity_grade, is_normal, group_key, license, notes
+    dataset_inventory: "../defect_classifying_model/data/manifests/dataset_inventory.csv"
+    inventory_summary: "../defect_classifying_model/data/manifests/inventory_summary.json"
+
+    # 1층 — 구조 (split 배정 단위, 중복 그룹, source root)
+    split_manifest: "../defect_classifying_model/data/derived/v1/splits/split_manifest.csv"
+    duplicate_groups: "../defect_classifying_model/data/derived/v1/manifests/duplicate_groups.csv"
+    image_hashes: "../defect_classifying_model/data/derived/v1/reports/image_hashes.csv"
+
+    # 2층 — origin 오버라이드 (★ 이것이 권위 있는 값)
+    origin_decisions: "../defect_classifying_model/data/derived/v1/origin/origin_decisions.csv"
+    origin_overrides: "../defect_classifying_model/configs/origin_overrides.json"
+    origin_ok_marker: "../defect_classifying_model/data/derived/v1/origin/_ORIGIN_OK.json"
+
+    # 3층 — 사람이 내린 판정 (992건). 재검수하지 않는다.
+    review_manifest: "../defect_classifying_model/data/derived/v1/review/review_manifest.csv"
+    artifact_decisions: "../defect_classifying_model/data/derived/v1/artifacts/artifact_decisions.csv"
+    eval_artifact_direct_decisions: "../defect_classifying_model/data/derived/v1/artifacts/eval_artifact_direct_decisions.csv"
+    manual_confirmed_artifacts: "../defect_classifying_model/configs/manual_confirmed_artifacts.json"
+    derivative_eval_review: "../defect_classifying_model/configs/derivative_eval_review.json"
+
+    # 4층 — crop 소스 (D-01 / D-15)
+    aihub_polygons: "../defect_classifying_model/data/derived/v1/aihub_polygons"
+    aihub_polygon_annotations: "../defect_classifying_model/data/derived/v1/aihub_polygons/annotations.csv"
+
+    # 5층 — AIHub 라벨 감사 (D-15). annotation_error 15건을 학습·평가에서 차단한다.
+    aihub_label_audit: "../defect_classifying_model/data/derived/v1/review/aihub_label_audit/audit_manifest.csv"
+    aihub_label_audit_marker: "../defect_classifying_model/data/derived/v1/review/aihub_label_audit/_AUDIT_RESULT_OK.json"
+
+  # 참조만 한다. 승계하지 않는다 (L3 계보 / 정책 B 미결 상태).
+  reference_only:
+    classifier_l3: "../defect_classifying_model/data/derived/v1/classifier"
+    experiments: "../defect_classifying_model/data/derived/v1/experiments"
+    yolo_d0_s0: "../defect_classifying_model/data/derived/v1/yolo_d0_s0"
+    aihub_positive_crops: "../defect_classifying_model/data/derived/v1/aihub_positive_crops"
+
+# 이 저장소의 산출물
+artifacts:
+  root: "artifacts"
+  inherited: "artifacts/inherited"
+  crops: "artifacts/crops"
+  metadata: "artifacts/metadata"
+  splits: "artifacts/splits"
+  review: "artifacts/review"
+  reports: "artifacts/reports"
+  experiments: "artifacts/experiments"   # run_config / metrics / 환경 — git 추적 대상
+
+runs: "runs"      # 체크포인트·바이너리. git 제외
+models: "models"  # ONNX. git 제외
+
+# 전 CSV I/O 공통. Windows cp949 + UTF-8 BOM 혼재 대응 (P8)
+io:
+  read_encoding: "utf-8-sig"
+  write_encoding: "utf-8-sig"

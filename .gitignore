@@ -1,0 +1,34 @@
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.pytest_cache/
+
+# 학습 산출물 — 바이너리만 제외한다.
+# run_config.json / metrics.json / 환경 정보 / checkpoint SHA-256 / 모델 metadata 는
+# artifacts/experiments/ 에 복사해서 추적한다. 재현성의 핵심이므로 커밋한다.
+runs/
+models/
+*.pt
+*.pth
+*.onnx
+*.npy
+
+# artifacts/experiments/ 는 추적한다 (JSON/CSV 만 들어간다)
+!artifacts/experiments/
+!artifacts/experiments/**
+
+# 생성된 crop 과 대용량 산출물
+artifacts/crops/
+artifacts/reports/**/*.png
+artifacts/reports/**/*.jpg
+
+# 승계 스냅샷은 MANIFEST 만 커밋한다 (원본 CSV 는 대용량)
+artifacts/inherited/*
+!artifacts/inherited/MANIFEST.json
+
+# metadata / splits 는 커밋한다 — 재현성의 핵심이다
+!artifacts/metadata/
+!artifacts/splits/
+
+.env

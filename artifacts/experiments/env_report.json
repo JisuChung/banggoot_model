@@ -1,0 +1,394 @@
+{
+  "generated_at": "2026-08-03T04:03:34.417176+00:00",
+  "repo_root": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\banggoot_model",
+  "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "packages": [
+    {
+      "package": "torch",
+      "op": "==",
+      "want": "2.6.0+cu124",
+      "got": "2.6.0+cu124",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "torchvision",
+      "op": "==",
+      "want": "0.21.0+cu124",
+      "got": "0.21.0+cu124",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "timm",
+      "op": "==",
+      "want": "1.0.22",
+      "got": "1.0.22",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "ultralytics",
+      "op": "==",
+      "want": "8.4.112",
+      "got": "8.4.112",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "numpy",
+      "op": "==",
+      "want": "2.4.6",
+      "got": "2.4.6",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "pandas",
+      "op": "==",
+      "want": "3.0.5",
+      "got": "3.0.5",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "pillow",
+      "op": "==",
+      "want": "12.3.0",
+      "got": "12.3.0",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "opencv-python",
+      "op": "==",
+      "want": "5.0.0.93",
+      "got": "5.0.0.93",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "scikit-learn",
+      "op": "==",
+      "want": "1.9.0",
+      "got": "1.9.0",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "PyYAML",
+      "op": "==",
+      "want": "6.0.3",
+      "got": "6.0.3",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "matplotlib",
+      "op": "==",
+      "want": "3.10.7",
+      "got": "3.10.7",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "onnx",
+      "op": "==",
+      "want": "1.20.0",
+      "got": "1.20.0",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "onnxruntime",
+      "op": "==",
+      "want": "1.24.1",
+      "got": "1.24.1",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "albumentations",
+      "op": "==",
+      "want": "2.0.8",
+      "got": "2.0.8",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "imagehash",
+      "op": "==",
+      "want": "4.3.2",
+      "got": "4.3.2",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "seaborn",
+      "op": "==",
+      "want": "0.13.2",
+      "got": "0.13.2",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "jinja2",
+      "op": "==",
+      "want": "3.1.6",
+      "got": "3.1.6",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "jupyterlab",
+      "op": "==",
+      "want": "4.6.2",
+      "got": "4.6.2",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "ipywidgets",
+      "op": "==",
+      "want": "8.1.8",
+      "got": "8.1.8",
+      "status": "ok",
+      "import_ok": true
+    },
+    {
+      "package": "tqdm",
+      "op": "==",
+      "want": "4.70.0",
+      "got": "4.70.0",
+      "status": "ok",
+      "import_ok": true
+    }
+  ],
+  "torch": {
+    "torch": "2.6.0+cu124",
+    "cuda_build": "12.4",
+    "cuda_available": true,
+    "device_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "capability": "sm_89",
+    "total_vram_mb": 6141,
+    "matmul_ok": true,
+    "peak_vram_mb": 48.12,
+    "status": "ok"
+  },
+  "legacy_paths": [
+    {
+      "kind": "base",
+      "key": "legacy_root",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "base",
+      "key": "data_raw",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\raw",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "base",
+      "key": "registry",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\configs\\dataset_registry.json",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "dataset_inventory",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\manifests\\dataset_inventory.csv",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "inventory_summary",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\manifests\\inventory_summary.json",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "split_manifest",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\splits\\split_manifest.csv",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "duplicate_groups",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\manifests\\duplicate_groups.csv",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "image_hashes",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\reports\\image_hashes.csv",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "origin_decisions",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\origin\\origin_decisions.csv",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "origin_overrides",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\configs\\origin_overrides.json",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "origin_ok_marker",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\origin\\_ORIGIN_OK.json",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "review_manifest",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\review\\review_manifest.csv",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "artifact_decisions",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\artifacts\\artifact_decisions.csv",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "eval_artifact_direct_decisions",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\artifacts\\eval_artifact_direct_decisions.csv",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "manual_confirmed_artifacts",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\configs\\manual_confirmed_artifacts.json",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "derivative_eval_review",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\configs\\derivative_eval_review.json",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "aihub_polygons",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\aihub_polygons",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "inherit",
+      "key": "aihub_polygon_annotations",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\aihub_polygons\\annotations.csv",
+      "exists": true,
+      "required": true
+    },
+    {
+      "kind": "reference",
+      "key": "classifier_l3",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\classifier",
+      "exists": true,
+      "required": false
+    },
+    {
+      "kind": "reference",
+      "key": "experiments",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\experiments",
+      "exists": true,
+      "required": false
+    },
+    {
+      "kind": "reference",
+      "key": "yolo_d0_s0",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\yolo_d0_s0",
+      "exists": true,
+      "required": false
+    },
+    {
+      "kind": "reference",
+      "key": "aihub_positive_crops",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\derived\\v1\\aihub_positive_crops",
+      "exists": true,
+      "required": false
+    }
+  ],
+  "raw_datasets": [
+    {
+      "dataset": "dacon_wallpaper",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\raw\\dacon_wallpaper",
+      "exists": true
+    },
+    {
+      "dataset": "aihub_seoul_aged_housing",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\raw\\aihub_seoul_aged_housing",
+      "exists": true
+    },
+    {
+      "dataset": "kaggle_infrastructure_structural_defects",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\raw\\kaggle_infrastructure_structural_defects",
+      "exists": true
+    },
+    {
+      "dataset": "roboflow_wall_defects",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\raw\\roboflow_wall_defects",
+      "exists": true
+    },
+    {
+      "dataset": "roboflow_wallpaper_kr",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\raw\\roboflow_wallpaper_kr",
+      "exists": true
+    },
+    {
+      "dataset": "roboflow_house_defect",
+      "path": "C:\\Users\\SSAFY\\Documents\\ssafy_jc\\sub_pjt\\defect_classifying_model\\data\\raw\\roboflow_house_defect",
+      "exists": true
+    }
+  ],
+  "encoding": {
+    "sys_default_encoding": "utf-8",
+    "preferred_encoding": "cp949",
+    "stdout_encoding": "UTF-8",
+    "io_encoding": "utf-8-sig",
+    "label_mapping_rows": 58,
+    "dacon_classes": 19,
+    "korean_roundtrip_ok": true,
+    "first_header": "source_dataset",
+    "status": "ok"
+  },
+  "configs": {
+    "status": "ok",
+    "l1_classes": [
+      "crack",
+      "breakage",
+      "stain_corrosion",
+      "moisture_leak",
+      "lifting",
+      "mold",
+      "finish_damage"
+    ],
+    "sample_unit": "crop",
+    "normal_is_a_class": false
+  },
+  "blockers": [],
+  "status": "ok"
+}
