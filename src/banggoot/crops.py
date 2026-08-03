@@ -8,7 +8,8 @@
     Kaggle    227x227 표면 패치 -> identity
 
 geometry 는 configs/crop.yaml 의 crop-context-2.0 이다. 임의로 바꾸면 기존 QC 근거가
-사라진다. max_crop_fraction 은 1.00 이며 그 이유는 D-15 참조.
+사라진다. max_crop_fraction 은 **0.55** 이고 반드시 floor 규칙과 함께 써야 한다
+(cap 단독으로는 legacy 산출물이 재현되지 않는다). 상세는 D-15 참조.
 
 금지 사항:
     - sealed_future_eval 행은 이미지를 열지도 않는다 (D-14)
@@ -43,7 +44,12 @@ def load_crop_config(path: Path | None = None) -> dict[str, Any]:
 
 @dataclass(frozen=True)
 class Box:
-    """정규화 좌표 (cx, cy, w, h) + L1 라벨."""
+    """정규화 좌표 (cx, cy, w, h) + L1 라벨 + 출처 추적용 인덱스.
+
+    `index` 는 **dedupe 이전** 원본 annotation 순번이다. crop 의 sample_id 접미사는
+    dedupe **이후** 순번이라 둘이 다르다. 이 둘을 혼동하면 회귀검증에서 잘못된 쌍을
+    비교하게 된다 — 실제로 그 버그로 8건이 미매칭으로 잘못 보고됐다.
+    """
 
     cx: float
     cy: float
@@ -51,6 +57,7 @@ class Box:
     h: float
     label: str
     severity: str = ""
+    index: int = -1
 
     def xyxy(self, img_w: int, img_h: int) -> tuple[float, float, float, float]:
         return (
@@ -81,8 +88,8 @@ def load_aihub_boxes() -> dict[str, list[Box]]:
     out: dict[str, list[Box]] = {}
     for rec, g in df.groupby("record_id"):
         out[rec] = [
-            Box(r.cx, r.cy, r.w, r.h, r.target_class, str(r.severity))
-            for r in g.itertuples()
+            Box(r.cx, r.cy, r.w, r.h, r.target_class, str(r.severity), i)
+            for i, r in enumerate(g.itertuples())
         ]
     return out
 
@@ -93,7 +100,7 @@ def load_roboflow_boxes(label_path: Path, class_names: list[str],
     if not label_path.exists():
         return []
     boxes = []
-    for line in label_path.read_text(encoding="utf-8").splitlines():
+    for line_no, line in enumerate(label_path.read_text(encoding="utf-8").splitlines()):
         parts = line.split()
         if len(parts) < 5:
             continue
@@ -104,7 +111,7 @@ def load_roboflow_boxes(label_path: Path, class_names: list[str],
         if not l1:                      # None = L1 매핑 없음 (baseboard, bottle 등)
             continue
         cx, cy, w, h = (float(v) for v in parts[1:5])
-        boxes.append(Box(cx, cy, w, h, l1))
+        boxes.append(Box(cx, cy, w, h, l1, "", line_no))
     return boxes
 
 
@@ -185,6 +192,8 @@ CROP_FIELDS = [
     "sample_id", "crop_path", "mode", "parent_record_id", "parent_image_path",
     "dataset", "unified_label", "severity",
     "duplicate_group_id", "split_component_id", "source_root_id",
+    "source_bbox_cx", "source_bbox_cy", "source_bbox_w", "source_bbox_h",
+    "source_annotation_index", "seed_box_id", "crop_rule_version",
     "crop_x0", "crop_y0", "crop_side", "crop_width", "crop_height",
     "parent_width", "parent_height", "bbox_area_ratio",
     "num_boxes_in_crop", "mixed_l1_in_crop",
@@ -237,7 +246,7 @@ def _load_registry() -> dict[str, dict[str, str | None]]:
     return {k: v.get("class_map", {}) for k, v in reg["datasets"].items()}
 
 
-def _identity_row(row, lane: str) -> dict[str, Any]:
+def _identity_row(row, lane: str, rule_version: str) -> dict[str, Any]:
     """bbox 가 없는 데이터셋. 원본이 곧 crop 이므로 복사하지 않고 참조만 한다."""
     return {
         "sample_id": f"{row.record_id}#0",
@@ -251,6 +260,11 @@ def _identity_row(row, lane: str) -> dict[str, Any]:
         "duplicate_group_id": row.duplicate_group_id,
         "split_component_id": row.split_component_id,
         "source_root_id": row.source_root_id,
+        "source_bbox_cx": 0.5, "source_bbox_cy": 0.5,
+        "source_bbox_w": 1.0, "source_bbox_h": 1.0,
+        "source_annotation_index": -1,
+        "seed_box_id": f"{row.record_id}@identity",
+        "crop_rule_version": rule_version,
         "crop_x0": 0, "crop_y0": 0, "crop_side": -1,
         "crop_width": -1, "crop_height": -1,
         "parent_width": -1, "parent_height": -1,
@@ -292,7 +306,7 @@ def build(df: pd.DataFrame, limit: int | None = None,
 
         # identity — bbox 가 없는 데이터셋은 원본이 곧 crop
         if row.dataset in ("dacon_wallpaper", "kaggle_cracks"):
-            rows.append(_identity_row(row, lane))
+            rows.append(_identity_row(row, lane, cfg["rule_version"]))
             stats.identity += 1
             stats.by_dataset[row.dataset] = stats.by_dataset.get(row.dataset, 0) + 1
             continue
@@ -342,6 +356,11 @@ def build(df: pd.DataFrame, limit: int | None = None,
                 "duplicate_group_id": row.duplicate_group_id,
                 "split_component_id": row.split_component_id,
                 "source_root_id": row.source_root_id,
+                "source_bbox_cx": box.cx, "source_bbox_cy": box.cy,
+                "source_bbox_w": box.w, "source_bbox_h": box.h,
+                "source_annotation_index": box.index,
+                "seed_box_id": f"{row.record_id}@{box.index}",
+                "crop_rule_version": cfg["rule_version"],
                 "crop_x0": x0, "crop_y0": y0, "crop_side": side,
                 "crop_width": side, "crop_height": side,
                 "parent_width": W, "parent_height": H,
@@ -403,8 +422,58 @@ def verify(crops_df: pd.DataFrame, parents: pd.DataFrame,
     for col in ("duplicate_group_id", "split_component_id", "parent_record_id"):
         check(crops_df[col].notna().all(), f"{col} 상속 누락")
 
+    # seed bbox provenance — 순번 추론 없이 회귀검증이 가능해야 한다
+    for col in ("source_bbox_cx", "source_bbox_cy", "source_bbox_w", "source_bbox_h",
+                "seed_box_id", "crop_rule_version"):
+        check(crops_df[col].notna().all(), f"{col} 누락")
+    check(crops_df["seed_box_id"].is_unique, "seed_box_id 중복")
+    check(crops_df["sample_id"].is_unique, "sample_id 중복")
+    check(crops_df["crop_rule_version"].eq(cfg["rule_version"]).all(),
+          "crop_rule_version 불일치")
+
+    # 선택된 parent 가 전부 산출물에 있다
+    missing = set(parents["record_id"]) - set(crops_df["parent_record_id"])
+    check(not missing, f"산출물에 없는 parent {len(missing)}건")
+
     if errs:
         raise AssertionError("crop 검증 실패:\n  - " + "\n  - ".join(errs))
+    return errs
+
+
+def verify_files(crops_df: pd.DataFrame, stats: CropStats) -> list[str]:
+    """디스크 상태와 manifest 가 일치하는지 확인한다 (노트북 02 최종 gate).
+
+    manifest 만 검증하면 "쓰다가 실패한 파일"을 못 잡는다.
+    """
+    errs: list[str] = []
+    root = load_paths().artifact("crops")
+
+    def check(cond: bool, msg: str) -> None:
+        if not cond:
+            errs.append(msg)
+
+    check(stats.skipped_no_box == 0, f"box 없이 건너뛴 parent {stats.skipped_no_box}건")
+    check(stats.skipped_unreadable == 0, f"읽지 못한 이미지 {stats.skipped_unreadable}건")
+
+    referenced = {(root / p).resolve()
+                  for p in crops_df.loc[crops_df["mode"].ne("identity"), "crop_path"]}
+    on_disk = {p.resolve() for p in root.rglob("*.jpg")} if root.exists() else set()
+
+    check(referenced == on_disk,
+          f"manifest 참조 {len(referenced)} vs 실제 파일 {len(on_disk)} "
+          f"(참조만 {len(referenced - on_disk)} · 디스크만 {len(on_disk - referenced)})")
+    check(len(on_disk) == stats.crops_written,
+          f"실제 파일 {len(on_disk)} != crops_written {stats.crops_written}")
+
+    # identity 는 복사하지 않고 원본을 참조한다
+    legacy = load_paths().legacy_root
+    ident = crops_df.loc[crops_df["mode"].eq("identity"), "crop_path"]
+    sample = [legacy / p for p in ident.head(200)]
+    bad = [p for p in sample if not p.exists()]
+    check(not bad, f"identity 원본 누락 {len(bad)}건 (표본 200)")
+
+    if errs:
+        raise AssertionError("crop 파일 검증 실패:\n  - " + "\n  - ".join(errs))
     return errs
 
 
@@ -412,4 +481,9 @@ def save(crops_df: pd.DataFrame) -> Path:
     out = load_paths().artifact("metadata") / "crops.csv"
     out.parent.mkdir(parents=True, exist_ok=True)
     crops_df.to_csv(out, index=False, encoding=ENCODING)
+
+    back = pd.read_csv(out, encoding=ENCODING, low_memory=False)
+    assert len(back) == len(crops_df), "round-trip 행 수 불일치"
+    assert set(back["unified_label"]) == set(crops_df["unified_label"]), \
+        "round-trip 라벨 불일치 (인코딩 의심)"
     return out

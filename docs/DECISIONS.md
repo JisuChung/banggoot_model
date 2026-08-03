@@ -587,7 +587,7 @@ D-12의 `unknown_origin → split=train`과도 충돌한다. **계보별 불린 
 
 | 컬럼 | 정의 | 실측 |
 | --- | --- | ---: |
-| `head_a6_eligible` | **`sample_role=='primary'`** ∧ ¬moisture ∧ ¬sealed | 6,509 |
+| `head_a6_eligible` | **`sample_role=='primary'`** ∧ ¬moisture ∧ ¬sealed ∧ ¬annotation_error | 6,494 |
 | `head_a6_aux_pool` | `sample_role=='auxiliary'` ∧ ¬moisture ∧ ¬sealed. **ablation 전용** | 3,169 |
 | `head_a7_aux_train` | 탐색 7-class 계보의 moisture aux | 103 |
 | `sealed_future_eval` | **영구 미개봉.** 어떤 계보의 학습에도 쓰지 않는다 | 45 |
@@ -699,37 +699,71 @@ D-01의 10~15%는 근거 없이 정한 값이었고, 기존 저장소에 QC로 �
 ```yaml
 context_ratio:                0.35    # side = max(bw,bh) * (1 + 2*ratio)
 min_crop_px:                  128
+max_crop_fraction:            0.55    # ★ floor 규칙과 반드시 함께
 min_retained_area:            0.50    # 이웃 box 잔존 면적 하한
-dedupe_iou:                   0.70
-max_crop_fraction:            1.00    # ★ 아래 참조
+dedupe_iou:                   0.70    # 같은 L1 끼리만
 square_target:                true
 legacy_rounding_tolerance_px: 1       # 회귀검증 시 좌표 ±1px 허용
 ```
 
-**`max_crop_fraction=1.00`인 이유 — 문서가 아니라 산출물과 QC가 권위다**
+**★ cap 단독으로는 재현되지 않는다 — floor 규칙이 함께 있어야 한다**
 
-`D0_DETECTOR_REPORT.md`는 crop-context-2.0에서 "max_crop_fraction 신설 0.55"라고 쓰지만,
-실제로는 적용되지 않았다.
+```python
+side = max(bw, bh) * (1 + 2 * context_ratio)
+side = max(side, min_crop_px)
+side = min(side, short_edge * max_crop_fraction)     # 0.55 cap
+side = max(side, min(max(bw, bh), short_edge))       # ★ floor — seed box 아래로 못 내려감
+side = min(side, short_edge)
+```
 
-- `_AIHUB_CROPS_OK.json`의 `parameters` 블록에 이 키가 **없다**
-- `build_aihub_positive_crops.py` argparse **default = 1.0**
-- 실측 `crop_width / min(parent_w, parent_h)`: 중앙 0.296 · p90 0.681 · **최대 1.000**
-- **0.55 초과 crop 411/2,783 (14.8%)**. 코드가 `side = min(side, short_edge * max_crop_fraction)`
-  이므로 0.55였다면 최대가 0.55여야 한다
-- QC 100장 표본에도 0.55 초과가 12장 포함됐고 그중 실패는 1장뿐이다
-- 스크립트 SHA-256이 marker와 일치하므로 코드 변경 탓이 아니다
+legacy 주석: *"The cap is what keeps a crop from degenerating into a whole scene;
+**it must still never fall below the seed box itself**."*
 
-따라서 **QC 8/100 실패율은 `max_crop_fraction=1.00`으로 얻은 수치**다.
-`0.55`는 재QC가 필요한 **ablation 후보**이며 baseline에 넣지 않는다.
+**재현 시뮬레이션 (legacy 2,783건, ±1px 허용)**
 
-**`square_target`과 1px 오차 — 경계 clipping이 아니다**
+| `max_crop_fraction` | 재현율 |
+| ---: | ---: |
+| **0.55** | **2,783 / 2,783 (100.00%)** |
+| 1.00 | 2,097 / 2,783 (75.35%) |
 
-기존 crop 2,783장 중 685장이 비정사각인데, **685장 전부 가로·세로 차이가 정확히 1px**이고
-그중 **471장(69%)은 이미지 내부**다(경계 접촉은 214장뿐). 즉 clipping이 아니라
-`left` · `top` · `left+side` · `top+side`를 각각 반올림해서 생긴 오차다.
+#### 정정 기록 — 한때 1.00 으로 잘못 결정했다
 
-새 구현은 **정수 `side`를 먼저 확정하고 `x1 = x0 + side`, `y1 = y0 + side`로 계산**해
-완전한 정사각을 보장한다. 기존 2,783 crop과 회귀검증할 때는 좌표 ±1px를 허용한다.
+D-15 초안은 `max_crop_fraction=1.00` 이었고 근거는 *"0.55 였다면 crop/short_edge 최대가
+0.55 여야 하는데 실측 최대가 1.000 이다"* 였다. **이 논거는 floor 규칙을 모르고 세운
+것이라 무효다.** 594px(=0.55×1080)를 초과하는 411건은 cap 미적용이 아니라 **seed box
+장변이 cap 보다 커서 floor 가 다시 올린 결과**이며, 그중 359건은
+`crop_width == box_long_edge` (±1px) 다.
+
+`_AIHUB_CROPS_OK.json` 의 `parameters` 블록에 이 키가 없는 것도 **marker 기록 누락**이지
+미적용 근거가 아니었다. `D0_DETECTOR_REPORT.md` 의 "0.55 신설" 기술이 옳았다.
+
+**교훈: legacy 파라미터는 marker 기록이 아니라 재현 시뮬레이션으로 판정한다.**
+
+**`square_target` 과 1px 오차 — 경계 clipping 이 아니다**
+
+기존 crop 2,783장 중 685장이 비정사각인데 **전부 가로·세로 차이가 정확히 1px** 이고
+그중 **471장(69%)은 이미지 내부**다(경계 접촉은 214장뿐). 즉 clipping 이 아니라
+`left` · `top` · `left+side` · `top+side` 를 각각 반올림해서 생긴 오차다.
+
+새 구현은 **정수 `side` 를 먼저 확정하고 `x1 = x0 + side`, `y1 = y0 + side` 로 계산**해
+완전한 정사각을 보장한다. 회귀검증 시 좌표 ±1px 를 허용한다.
+
+**회귀검증 결과 (2026-08-03)**
+
+매칭 키는 **seed bbox 좌표 전체**(cx, cy, w, h)다. `sample_id` 의 `#i` 는 dedupe **이후**
+순번이라 annotations 의 순번과 다르다 — 이를 혼동한 1차 검증이 8건을 "미매칭"으로 잘못
+보고했다.
+
+| 항목 | 값 |
+| --- | ---: |
+| legacy crops | 2,783 |
+| seed bbox 로 매칭 | **2,783** |
+| 미매칭 | **0** |
+| ±1px 이내 일치 | **2,783 / 2,783 (100.00%)** |
+| 신규에만 있는 crop | 923 (poor 486 · normal 195 · **good 242**) |
+
+신규 923건은 legacy 가 `legacy_split=train` + `severity in (normal, poor)` 로 제한해
+빠뜨렸던 분량이다. `good` 242장이 포함된 것은 D-15 규칙 2(severity 전량 포함)의 결과다.
 
 ### 노트북 02 필수 규칙
 

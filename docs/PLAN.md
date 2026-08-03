@@ -306,7 +306,7 @@ banggoot_model/
 
 | 컬럼 | 정의 | 실측 |
 | --- | --- | ---: |
-| `head_a6_eligible` | **`sample_role=='primary'`** ∧ ¬moisture ∧ ¬sealed | 6,509 |
+| `head_a6_eligible` | **`sample_role=='primary'`** ∧ ¬moisture ∧ ¬sealed ∧ ¬annotation_error | 6,494 |
 | `head_a6_aux_pool` | `sample_role=='auxiliary'` ∧ ¬moisture ∧ ¬sealed. ablation 전용 | 3,169 |
 | `head_a7_aux_train` | 탐색 7-class 계보의 moisture aux | 103 |
 | `sealed_future_eval` | **영구 미개봉** | 45 |
